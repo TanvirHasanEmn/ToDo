@@ -8,10 +8,10 @@ import '../../../../core/global_widget/custom_button.dart';
 import '../../../../core/utility/app_colors.dart';
 import '../../controller/create_todo_controller.dart';
 
-class CreateServicePage extends StatelessWidget {
+class CreateTodo extends StatelessWidget {
   final CreateServiceController controller = Get.put(CreateServiceController());
 
-  CreateServicePage({super.key});
+  CreateTodo({super.key});
 
   @override
   Widget build(BuildContext context) {

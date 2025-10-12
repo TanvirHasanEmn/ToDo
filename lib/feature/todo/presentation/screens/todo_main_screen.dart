@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_assignment/core/global_widget/custom_button_small.dart';
+import '../../../../core/route/app_route.dart';
 import '../../../../core/utility/app_colors.dart';
 import '../../controller/todo_controller.dart';
 import '../../models/ready_pending_completed_model.dart';
@@ -55,8 +56,7 @@ class TodoScreen extends StatelessWidget {
                             CustomButtonSmall(
                               text: "Upload json",
                               onTap: () {
-                                // Your onTap functionality here
-                                print("Create ToDo tapped!");
+
                               },
                             ),
 
@@ -65,8 +65,7 @@ class TodoScreen extends StatelessWidget {
                             CustomButtonSmall(
                               text: "Create ToDo",
                               onTap: () {
-                                // Your onTap functionality here
-                                print("Create ToDo tapped!");
+                                Get.toNamed(AppRoute.create);
                               },
                             ),
 
