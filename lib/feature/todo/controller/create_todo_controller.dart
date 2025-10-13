@@ -1,48 +1,44 @@
-
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import '../models/ready_pending_completed_model.dart';
+import 'todo_controller.dart';
 
 class CreateServiceController extends GetxController {
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final serviceNameController = TextEditingController();
-  final servicePriceController = TextEditingController();
   final descriptionController = TextEditingController();
-  final locationController = TextEditingController();
-  final postalcodeController = TextEditingController();
 
-  RxString selectedCategory = ''.obs;
+  static final statusOptions = ToDoStatus.values;
+  Rx<ToDoStatus> selectedStatus = ToDoStatus.pending.obs;
 
-  final List<String> categories = [
-    'Electricista',
-    'Plomería',
-    'Cuadro',
-    'Carpinteros',
-    'AC Reparar'
-  ];
-
-  Rx<File?> uploadedFile = Rx<File?>(null);
-  RxString selectedFileName = ''.obs;
-
-
-  void submitService() async {
+  /// Submit a new todo
+  Future<void> submitService() async {
     if (!formKey.currentState!.validate()) return;
-    if (uploadedFile.value == null) {
-      Get.snackbar("Error", "Please upload an image");
-      return;
-    }
 
-    final Map<String, dynamic> bodyData = {
-      "title": serviceNameController.text.trim(),
-      "category": selectedCategory.value,
-      "price": int.tryParse(servicePriceController.text.trim()) ?? 0,
-      "description": descriptionController.text.trim(),
-      // "location": locationController.text.trim(),
-      "postcode": postalcodeController.text.trim(),
-      // or add a TextEditingController for it if needed
-    };
+    final title = serviceNameController.text.trim();
+    final desc = descriptionController.text.trim();
+
+    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    final createdAt = DateTime.now().millisecondsSinceEpoch;
+
+    final todo = ToDoModel(
+      id: id,
+      title: title,
+      description: desc,
+      createdAt: createdAt,
+      status: selectedStatus.value,
+    );
+
+    // Add to main TodoController
+    final todoController = Get.find<TodoController>();
+    await todoController.addTodo(todo);
+
+    // clear
+    serviceNameController.clear();
+    descriptionController.clear();
+    selectedStatus.value = ToDoStatus.pending;
   }
-
 }

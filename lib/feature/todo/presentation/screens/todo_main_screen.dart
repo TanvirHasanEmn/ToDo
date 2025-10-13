@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -14,7 +16,6 @@ class TodoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final controller = Get.put(TodoController());
 
     return Scaffold(
@@ -25,101 +26,105 @@ class TodoScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 40.h),
-
-                Center(
-                  child: Text("To Do",
-                    style: GoogleFonts.inter(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
+            Center(
+              child: Text(
+                "To Do",
+                style: GoogleFonts.inter(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
                 ),
+              ),
+            ),
 
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(24.r),
-                        topRight: Radius.circular(24.r),
+            // Top white container with buttons
+            SizedBox(height: 12.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24.r),
+                  topRight: Radius.circular(24.r),
+                ),
+              ),
+              child: Column(
+                children: [
+                  SizedBox(height: 4.h),
+
+                  // Upload + Create
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomButtonSmall(
+                        text: "Upload json",
+                        onTap: () async {
+                          // Open a dialog to paste JSON or enter file path
+                          controller.pickAndImportJson();
+                        },
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 20.h),
-
-                        // My Services + Create Button
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomButtonSmall(
-                              text: "Upload json",
-                              onTap: () {
-
-                              },
-                            ),
-
-                            SizedBox(width: 16.w,),
-
-                            CustomButtonSmall(
-                              text: "Create ToDo",
-                              onTap: () {
-                                Get.toNamed(AppRoute.create);
-                              },
-                            ),
-
-                          ],
-                        ),
-                      ],
-                    ),
+                      SizedBox(width: 16.w),
+                      CustomButtonSmall(
+                        text: "Create ToDo",
+                        onTap: () async {
+                          // navigate to create screen
+                          Get.toNamed(AppRoute.create);
+                        },
+                      ),
+                    ],
                   ),
+                ],
+              ),
+            ),
 
-            Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: ToDoTab.values.map((tab) {
-                final isSelected = controller.selectedTab.value == tab;
-                return GestureDetector(
-                  onTap: () => controller.changeTab(tab),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width / 3.5,
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          width: 2,
-                          color: isSelected
-                              ? AppColor.primaryColor
-                              : Colors.transparent,
+            // Tabs
+            Obx(
+                  () => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: ToDoStatus.values.map((tab) {
+                  final isSelected = controller.selectedStatus.value == tab;
+                  return GestureDetector(
+                    onTap: () => controller.changeStatus(tab),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width / 3.5,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            width: 2,
+                            color: isSelected ? AppColor.primaryColor : Colors.transparent,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        tab.name.capitalize! ,
+                        style: GoogleFonts.inter(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: isSelected ? AppColor.primaryColor : Colors.black54,
                         ),
                       ),
                     ),
-                    child: Text(
-                      tab.name.capitalize!,
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: isSelected
-                            ? AppColor.primaryColor
-                            : Colors.black54,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            )),
+                  );
+                }).toList(),
+              ),
+            ),
+
             SizedBox(height: 10.h),
-            Text("my_services_title",
+            Text(
+              "My Todos",
               style: GoogleFonts.inter(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
+
+            // List
             Expanded(
               child: Obx(() {
-                final bookings = controller.currentBookings;
-                if (bookings.isEmpty) {
+                final items = controller.currentTodos;
+                if (items.isEmpty) {
                   return Center(
                     child: Text(
                       "No ToDo's found",
@@ -128,17 +133,15 @@ class TodoScreen extends StatelessWidget {
                   );
                 }
                 return ListView.separated(
-                  itemCount: bookings.length,
-                  separatorBuilder: (_, __) => SizedBox(height: 20.h),
+                  padding: EdgeInsets.only(top: 8.h, bottom: 20.h),
+                  itemCount: items.length,
+                  separatorBuilder: (_, __) => SizedBox(height: 12.h),
                   itemBuilder: (_, index) {
-                    final booking = bookings[index];
+                    final todo = items[index];
                     return TabCard(
-                      image: booking.image,
-                      title: booking.title,
-                      date: booking.date,
-                      price: booking.price,
-                      time: booking.time,
-                      address: booking.address,
+                      todo: todo,
+                      onDelete: () => controller.deleteTodo(todo.id),
+                      onChangeStatus: (newStatus) => controller.updateTodoStatus(todo.id, newStatus),
                     );
                   },
                 );

@@ -1,59 +1,125 @@
 import 'package:flutter/cupertino.dart';
 
-enum ToDoTab { Ready, Completed, Pending }
+/// Enum for status
+enum ToDoStatus { ready, pending, completed }
 
+/// Model representing a todo entry with csv/json helpers
 class ToDoModel {
-  final String image;
+  final String id; // string id (we'll use timestamp string by default)
   final String title;
-  final String date;
-  final String price;
-  final String? canceldate;
-  final String time;
-  final String? reason;
-  final String address;
+  final String description;
+  final int createdAt; // unix milliseconds
+  final ToDoStatus status;
 
   ToDoModel({
-    required this.image,
+    required this.id,
     required this.title,
-    required this.date,
-    required this.price,
-    required this.time,
-    required this.address,
-    this.canceldate,
-    this.reason,
-
+    required this.description,
+    required this.createdAt,
+    required this.status,
   });
 
-  factory ToDoModel.fromJson(Map<String, dynamic> json) {
-    try {
-      final service = json['service'] ?? {};
-      final String rawDate = json['date'] ?? '';
-      final String? cancelledAt = json['cancelledAt'];
-      String? cancelDateFormatted;
-      if (cancelledAt != null) {
-        final DateTime cancelledDate = DateTime.tryParse(cancelledAt) ?? DateTime.now();
-      }
+  // readable date helper
+  String get readableDate {
+    final dt = DateTime.fromMillisecondsSinceEpoch(createdAt);
+    return '${dt.year}-${_two(dt.month)}-${_two(dt.day)} ${_two(dt.hour)}:${_two(dt.minute)}';
+  }
 
+  String _two(int n) => n.toString().padLeft(2, '0');
+
+  /// Convert to CSV row (fields will be quoted and internal quotes doubled)
+  String toCsvLine() {
+    String q(String value) {
+      final escaped = value.replaceAll('"', '""');
+      return '"$escaped"';
+    }
+
+    return [q(id), q(title), q(description), q(createdAt.toString()), q(status.name)].join(',');
+  }
+
+  /// Parse CSV line into model
+  factory ToDoModel.fromCsvLine(String line) {
+    final fields = _parseCsvLine(line);
+    try {
       return ToDoModel(
-        image: service['image'] ?? '',
-        title: service['title'] ?? 'Unknown Title',
-        date: "",
-        price: '\$${service['price'] ?? '0'}',
-        time: json['time'] ?? 'N/A',
-        address: service['user']?['address'] ?? 'No address',
-        canceldate: cancelDateFormatted,
-        reason: json['cancelReason'],
+        id: fields[0],
+        title: fields[1],
+        description: fields[2],
+        createdAt: int.tryParse(fields[3]) ?? DateTime.now().millisecondsSinceEpoch,
+        status: _statusFromString(fields[4]),
       );
     } catch (e) {
-      debugPrint('❌ Worker booking parsing error: $e');
+      debugPrint('CSV parse error: $e');
       return ToDoModel(
-        image: '',
-        title: 'Error loading service',
-        date: 'Error',
-        time: 'N/A',
-        address: '',
-        price: '\$0',
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Parsing error',
+        description: '',
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        status: ToDoStatus.pending,
       );
     }
+  }
+
+  /// Convert to JSON
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'description': description,
+    'created_at': createdAt,
+    'status': status.name,
+  };
+
+  /// From JSON (expects keys: id, title, description, created_at, status)
+  factory ToDoModel.fromJson(Map<String, dynamic> json) {
+    return ToDoModel(
+      id: (json['id'] ?? DateTime.now().millisecondsSinceEpoch).toString(),
+      title: (json['title'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      createdAt: (json['created_at'] is int)
+          ? json['created_at']
+          : int.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now().millisecondsSinceEpoch,
+      status: _statusFromString((json['status'] ?? 'pending').toString()),
+    );
+  }
+
+  static ToDoStatus _statusFromString(String s) {
+    s = s.toLowerCase();
+    if (s == 'ready') return ToDoStatus.ready;
+    if (s == 'completed') return ToDoStatus.completed;
+    return ToDoStatus.pending;
+  }
+
+  /// Simple CSV parser for a single line (supports quoted fields and doubled quotes)
+  static List<String> _parseCsvLine(String line) {
+    final List<String> result = [];
+    final sb = StringBuffer();
+    bool inQuotes = false;
+    for (int i = 0; i < line.length; i++) {
+      final ch = line[i];
+      if (inQuotes) {
+        if (ch == '"') {
+          // check for doubled quote
+          if (i + 1 < line.length && line[i + 1] == '"') {
+            sb.write('"');
+            i++;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          sb.write(ch);
+        }
+      } else {
+        if (ch == '"') {
+          inQuotes = true;
+        } else if (ch == ',') {
+          result.add(sb.toString());
+          sb.clear();
+        } else {
+          sb.write(ch);
+        }
+      }
+    }
+    result.add(sb.toString());
+    return result;
   }
 }
