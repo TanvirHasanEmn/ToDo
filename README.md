@@ -1,6 +1,6 @@
-# 📝 Flutter To-Do App (CSV + JSON Import)
+# 📝 Flutter To-Do App (CSV + JSON Import) | 🧑‍💻 Author - Tanvir Hasan (💬 Flutter Developer) | 📧 tanvirhasanemn@gmail.com
 
-A simple and clean **To-Do App built with Flutter**, where all your tasks are **stored locally in a CSV file** on the device.  
+A simple and clean **To-Do App built with Flutter**, where all your tasks are **stored locally in a CSV file** on the android device's **Download Folder**.  
 You can also **import tasks from a JSON file** to quickly add multiple to-dos at once — all without any external backend or database.
 
 ---
@@ -28,7 +28,44 @@ Each to-do item includes:
 
 ---
 
-## 💾 Local File Storage
+- When you **import a JSON file**, its data is parsed and merged into the existing to-do list, and the CSV file is updated immediately.
 
-- All to-dos are saved as a **CSV file** in the app's local storage directory.  
-  Example path (Android):  
+---
+
+⚙️ Setup & Run
+
+Step1: Clone this repository - 
+git clone https://github.com/yourusername/flutter_todo_csv.git
+
+Step2: Install dependencies - 
+flutter pub get
+
+Step3:Run the app - 
+flutter run
+
+
+
+## 📂 Example JSON Format
+
+Here’s how your JSON file should look when you upload it:
+
+```json
+[
+{
+  "id": 1,
+  "title": "Buy Groceries",
+  "description": "Milk, eggs, bread",
+  "created_at": 1717331200000,
+  "status": "pending"
+},
+{
+  "id": 2,
+  "title": "Finish Flutter Project",
+  "description": "Todo app with CSV and JSON import",
+  "created_at": 1717335200000,
+  "status": "ready"
+}
+]
+
+
+
