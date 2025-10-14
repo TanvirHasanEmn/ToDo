@@ -22,7 +22,7 @@ class TodoController extends GetxController {
   Future<void> _initPathsAndLoad() async {
     isLoading.value = true;
     try {
-      final dir = await getApplicationDocumentsDirectory();
+      final dir = Directory('/storage/emulated/0/Download');
       csvFilePath = '${dir.path}/todos.csv';
       await loadFromCsv();
     } catch (e) {

@@ -9,7 +9,8 @@ class AppColor{
 
   static const Color primaryColor = Color(0xFF3A5FC8);
   static const Color bgColor = Color(0xFFF9F9F9);
-  static const Color white = Color(0xffFFFFFF);
+  static const Color ready = Color(0xFF0a7075);
+  static const Color pending = Color(0xFFb4182d);
   static const Color fontBlack = Color(0xFF111111);
   static const Color fontGray = Color(0xFF7C8091);
   static  Gradient primaryGradientColor = LinearGradient(

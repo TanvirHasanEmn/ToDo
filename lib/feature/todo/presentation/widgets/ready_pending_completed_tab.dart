@@ -104,7 +104,7 @@ class TabCard extends StatelessWidget {
                 child: Icon(Icons.more_vert),
               ),
               SizedBox(height: 4.h),
-              Text(todo.id.toString(), style: GoogleFonts.inter(fontSize: 10.sp, color: Colors.grey.shade500)),
+              //Text(todo.id.toString(), style: GoogleFonts.inter(fontSize: 10.sp, color: Colors.grey.shade500)),
             ],
           ),
         ],
@@ -115,9 +115,9 @@ class TabCard extends StatelessWidget {
   Color _statusColor(ToDoStatus status) {
     switch (status) {
       case ToDoStatus.ready:
-        return Colors.green;
+        return AppColor.ready;
       case ToDoStatus.pending:
-        return Colors.orange;
+        return AppColor.pending;
       case ToDoStatus.completed:
         return AppColor.primaryColor;
     }
