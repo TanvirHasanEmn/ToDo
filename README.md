@@ -5,6 +5,23 @@ You can also **import tasks from a JSON file** to quickly add multiple to-dos at
 
 ---
 
+
+## 🎥 Demo Video
+
+👉 **Watch the full demo on YouTube:**  
+[![Flutter To-Do App Demo](https://img.youtube.com/vi/aemjQodfqQA/0.jpg)](https://youtu.be/aemjQodfqQA)
+
+> Click the image above or [this link](https://youtu.be/aemjQodfqQA) to watch the demo.
+
+---
+
+## 📱 Download APK
+
+📦 **Download and try the app on your Android device:**  
+👉 [Download APK from Google Drive](https://drive.google.com/drive/folders/1IVxNZRtaNrrDVQYEZX6dJo7jR1uifHL2?usp=sharing)
+
+---
+
 ## 🚀 Features
 
 ### ✅ Core Functionalities
