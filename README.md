@@ -1,4 +1,4 @@
-# 📝 Flutter To-Do App (CSV + JSON Import) | 🧑‍💻 Author - Tanvir Hasan (💬 Flutter Developer) | 📧 tanvirhasanemn@gmail.com
+ # 📝 Flutter To-Do App (CSV + JSON Import) | 🧑‍💻 Author - Tanvir Hasan (💬 Flutter Developer) | 📧 tanvirhasanemn@gmail.com
 
 A simple and clean **To-Do App built with Flutter**, where all your tasks are **stored locally in a CSV file** on the android device's **Download Folder**.  
 You can also **import tasks from a JSON file** to quickly add multiple to-dos at once — all without any external backend or database.
@@ -52,7 +52,7 @@ Each to-do item includes:
 ⚙️ Setup & Run
 
 Step1: Clone this repository - 
-git clone https://github.com/yourusername/flutter_todo_csv.git
+git clone https://github.com/TanvirHasanEmn/ToDo.git
 
 Step2: Install dependencies - 
 flutter pub get
